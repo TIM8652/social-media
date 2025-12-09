@@ -4,20 +4,11 @@ Fetches user's analyzed scripts from popular table
 """
 from fastapi import APIRouter, HTTPException
 from typing import List, Optional
-import psycopg2
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
+from database import get_db_connection
 
 router = APIRouter(prefix="/api/popular-scripts", tags=["popular-scripts"])
-
-# Database configuration
-DB_CONFIG = {
-    "host": "localhost",
-    "port": 5432,
-    "database": "social_media",
-    "user": "postgres",
-    "password": "1234qwer"
-}
 
 class UpdateSuccessRequest(BaseModel):
     user_id: int
@@ -46,14 +37,6 @@ class PopularScript(BaseModel):
     success: Optional[str]  # 新增：成功归因原始文本
     prompt: Optional[str]  # 新增：单图提示词
     prompt_array: Optional[List[str]]  # 新增：多图提示词数组
-
-def get_db_connection():
-    """Get database connection"""
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        return conn
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
 
 def extract_tags_from_jianyi(jianyi1: str) -> List[str]:
     """Extract tags from jianyi1 analysis"""
