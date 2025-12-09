@@ -12,6 +12,7 @@ from google.genai import types
 import time
 import requests
 import base64
+from psycopg2.extras import RealDictCursor
 from database import get_db_connection
 
 router = APIRouter(prefix="/api/video-analysis", tags=["video-analysis"])
