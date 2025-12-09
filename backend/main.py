@@ -167,7 +167,7 @@ def scrape_data(request: ScrapeRequest, background_tasks: BackgroundTasks):
             "message": f"抓取失败: {str(e)}"
         }
 
-@app.post("/api/search-scrape")
+@app.post("/api/search/scrape")
 def search_scrape_data(request: SearchScrapeRequest, background_tasks: BackgroundTasks):
     """搜索标签数据抓取接口"""
     try:
