@@ -6,28 +6,11 @@ Currently supports: popular table
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
-import psycopg2
 from psycopg2.extras import RealDictCursor
 import json
+from database import get_db_connection
 
 router = APIRouter(prefix="/api/user-data", tags=["user-data"])
-
-# Database configuration
-DB_CONFIG = {
-    "host": "localhost",
-    "port": 5432,
-    "database": "social_media",
-    "user": "postgres",
-    "password": "1234qwer"
-}
-
-def get_db_connection():
-    """Get database connection"""
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        return conn
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
 
 
 # ============================================
