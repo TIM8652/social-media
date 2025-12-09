@@ -50,7 +50,7 @@ export const API_ENDPOINTS = {
   // ========== 爆款脚本 ==========
   popularScripts: (userId: number) => `/api/popular-scripts/?user_id=${userId}`,
   popularScriptUpdate: (scriptId: number) => `/api/popular-scripts/${scriptId}/success`,
-  popularScriptDelete: (userId: number, postId: string) => `/api/popular/${postId}?user_id=${userId}`,
+  popularScriptDelete: (userId: number, postId: string) => `/api/user-data/popular/${postId}?user_id=${userId}`,
   
   // ========== 图文分析 ==========
   imageAnalysisStart: '/api/image-analysis/start',
