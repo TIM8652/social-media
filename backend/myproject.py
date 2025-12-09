@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
+from psycopg2.extras import RealDictCursor
 from database import get_db_connection
 
 router = APIRouter(prefix="/api/my-projects", tags=["my-projects"])
