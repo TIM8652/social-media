@@ -12,6 +12,7 @@ import base64
 import re
 import time
 import json
+from psycopg2.extras import RealDictCursor
 from database import get_db_connection
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
