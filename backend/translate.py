@@ -4,12 +4,16 @@ from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from database import get_db_connection
+from apiconfig import get_api_key
 
 load_dotenv()
 
 # DeepSeek API配置
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
+
+def get_deepseek_key():
+    """从apiconfig获取DeepSeek API密钥"""
+    return get_api_key("DEEPSEEK_API_KEY") or os.getenv("DEEPSEEK_API_KEY", "")
 
 def translate_text(text, target_lang="中文", context=""):
     """使用DeepSeek API翻译文本"""
@@ -17,7 +21,7 @@ def translate_text(text, target_lang="中文", context=""):
         return ""
     
     headers = {
-        "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+        "Authorization": f"Bearer {get_deepseek_key()}",
         "Content-Type": "application/json"
     }
     
