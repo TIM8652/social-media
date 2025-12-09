@@ -20,7 +20,7 @@ router = APIRouter(prefix="/api/analysis", tags=["analysis"])
 from apiconfig import get_api_key
 
 def get_google_key():
-    return get_api_key("get_google_key()") or os.getenv("get_google_key()", "")
+        return get_api_key("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY", "")
 
 class AnalysisRequest(BaseModel):
     post_id: str
