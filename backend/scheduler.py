@@ -1,19 +1,8 @@
 import schedule
 import time
-import psycopg2
-from psycopg2.extras import RealDictCursor
 from datetime import datetime
 from cpostscrape import scrape_posts, save_posts_to_db, get_db_connection
 from translate import translate_competitor
-
-# 数据库配置
-DB_CONFIG = {
-    "host": "localhost",
-    "port": 5432,
-    "database": "social_media",
-    "user": "postgres",
-    "password": "1234qwer"
-}
 
 def get_all_competitors():
     """获取所有竞品用户名"""
