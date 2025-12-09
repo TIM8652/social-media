@@ -1,29 +1,15 @@
 import os
 import json
-import psycopg2
-from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
+from database import get_db_connection
 
 load_dotenv()
-
-# 数据库配置
-DB_CONFIG = {
-    "host": "localhost",
-    "port": 5432,
-    "database": "social_media",
-    "user": "postgres",
-    "password": "1234qwer"
-}
 
 # DeepSeek API配置
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
-
-def get_db_connection():
-    """获取数据库连接"""
-    return psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)
 
 def translate_text(text, target_lang="中文", context=""):
     """使用DeepSeek API翻译文本"""
