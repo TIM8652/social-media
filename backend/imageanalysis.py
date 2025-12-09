@@ -11,6 +11,7 @@ import requests
 import os
 import re
 from dotenv import load_dotenv
+from psycopg2.extras import RealDictCursor
 from database import get_db_connection
 
 load_dotenv()
