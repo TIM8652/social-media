@@ -20,13 +20,13 @@ router = APIRouter(prefix="/api/video-analysis", tags=["video-analysis"])
 from apiconfig import get_api_key
 
 def get_google_key():
-    return get_api_key("get_google_key()") or os.getenv("get_google_key()", "")
+    return get_api_key("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY", "")
 
 def get_sora2_key():
-    return get_api_key("get_sora2_key()") or os.getenv("get_sora2_key()", "")
+    return get_api_key("SORA2_API_KEY") or os.getenv("SORA2_API_KEY", "")
 
 def get_deepseek_key():
-    return get_api_key("get_deepseek_key()") or os.getenv("get_deepseek_key()", "")
+    return get_api_key("DEEPSEEK_API_KEY") or os.getenv("DEEPSEEK_API_KEY", "")
 
 def translate_to_english_with_deepseek(text: str) -> str:
     """
@@ -772,7 +772,7 @@ def translate_to_english_deepseek(text: str) -> str:
         翻译后的英文文本
     """
     if not get_deepseek_key():
-        print("⚠️  get_deepseek_key() not configured, skipping translation")
+        print("⚠️  DeepSeek API Key not configured, skipping translation")
         return text
     
     print(f"\n🌐 开始使用 DeepSeek 翻译文本...")
@@ -857,7 +857,7 @@ async def generate_video(request: GenerateVideoRequest):
     使用分镜头脚本(jianyi4)作为提示词
     """
     if not get_sora2_key():
-        raise HTTPException(status_code=500, detail="get_sora2_key() not configured")
+        raise HTTPException(status_code=500, detail="SORA2_API_KEY not configured")
     
     conn = get_db_connection()
     
