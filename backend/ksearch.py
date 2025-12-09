@@ -21,7 +21,7 @@ client = get_apify_client()
 
 # DeepSeek API配置
 def get_deepseek_key():
-    return get_api_key("get_deepseek_key()") or os.getenv("get_deepseek_key()", "")
+    return get_api_key("DEEPSEEK_API_KEY") or os.getenv("DEEPSEEK_API_KEY", "")
 
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
@@ -39,7 +39,7 @@ def translate_keyword(keyword: str) -> str:
         return ""
     
     if not get_deepseek_key():
-        print("⚠️  get_deepseek_key() not configured, skipping translation")
+        print("⚠️  DeepSeek API Key not configured, skipping translation")
         return ""
     
     try:
