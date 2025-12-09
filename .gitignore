@@ -1,0 +1,116 @@
+# ==================== 文档文件 ====================
+*.md
+!README.md
+
+# ==================== Python ====================
+# 虚拟环境
+backend/venv/
+backend/.venv/
+backend/env/
+backend/.env/
+
+# Python 缓存
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/.Python
+
+# 环境变量
+backend/.env
+backend/.env.local
+
+# IDE
+backend/.vscode/
+backend/.idea/
+backend/*.swp
+backend/*.swo
+backend/*~
+
+# 测试
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+
+# ==================== Node.js / React ====================
+# 依赖
+frontend/node_modules/
+frontend/.pnp
+frontend/.pnp.js
+
+# 构建产物
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/out/
+
+# 环境变量
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# 日志
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+# IDE
+frontend/.vscode/
+frontend/.idea/
+frontend/*.swp
+frontend/*.swo
+frontend/*~
+
+# 测试
+frontend/coverage/
+frontend/.nyc_output/
+
+# Vite
+frontend/.vite/
+
+# ==================== 操作系统 ====================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ==================== 数据库 ====================
+*.sqlite
+*.sqlite3
+*.db
+
+# ==================== 其他 ====================
+# 临时文件
+*.tmp
+*.temp
+*.log
+*.bak
+*.swp
+*.swo
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+
