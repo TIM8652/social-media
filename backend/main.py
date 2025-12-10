@@ -149,17 +149,30 @@ def health_check():
 def scrape_data(request: ScrapeRequest, background_tasks: BackgroundTasks):
     """竞品数据抓取接口"""
     try:
+        # 根据 scrape_type 计算 posts_count 和 stories_count
+        posts_count = 0
+        stories_count = 0
+        
+        if request.scrape_type == "posts":
+            posts_count = request.post_count
+        elif request.scrape_type == "stories":
+            stories_count = request.post_count
+        elif request.scrape_type == "both":
+            # 平分数量给图文和视频
+            posts_count = request.post_count // 2
+            stories_count = request.post_count - posts_count
+        
         # 在后台任务中执行抓取
         background_tasks.add_task(
             scrape_competitor_data, 
             request.username, 
-            request.post_count,
-            request.scrape_type
+            posts_count,
+            stories_count
         )
         
         return {
             "success": True,
-            "message": f"开始抓取用户 {request.username} 的数据，请稍后查看结果"
+            "message": f"开始抓取用户 {request.username} 的数据（图文: {posts_count}, 视频: {stories_count}），请稍后查看结果"
         }
     except Exception as e:
         return {
