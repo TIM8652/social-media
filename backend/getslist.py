@@ -222,3 +222,47 @@ def delete_post(post_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"删除失败: {str(e)}")
+
+@router.delete("/search/keywords/{keyword_id}")
+def delete_keyword(keyword_id: int):
+    """删除搜索关键词（级联删除所有关联帖子）
+    
+    Args:
+        keyword_id: 关键词ID
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # 先检查关键词是否存在
+        cursor.execute('SELECT id, keyword FROM search WHERE id = %s', (keyword_id,))
+        keyword_record = cursor.fetchone()
+        
+        if not keyword_record:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="关键词不存在")
+        
+        keyword = keyword_record['keyword']
+        
+        # 删除关键词（关联帖子会通过 ON DELETE CASCADE 自动删除）
+        cursor.execute('''
+            DELETE FROM search 
+            WHERE id = %s
+            RETURNING id
+        ''', (keyword_id,))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "message": f"关键词 #{keyword} 及其所有帖子已删除",
+            "keyword_id": keyword_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"删除失败: {str(e)}")
