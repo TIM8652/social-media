@@ -146,6 +146,16 @@ const Trends = () => {
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  
+  // 删除竞品账号相关状态
+  const [competitorToDelete, setCompetitorToDelete] = useState<Competitor | null>(null);
+  const [showDeleteCompetitorConfirm, setShowDeleteCompetitorConfirm] = useState(false);
+  const [deletingCompetitor, setDeletingCompetitor] = useState(false);
+  
+  // 删除关键词相关状态
+  const [keywordToDelete, setKeywordToDelete] = useState<SearchKeyword | null>(null);
+  const [showDeleteKeywordConfirm, setShowDeleteKeywordConfirm] = useState(false);
+  const [deletingKeyword, setDeletingKeyword] = useState(false);
 
   useEffect(() => {
     loadCompetitors();
@@ -320,6 +330,80 @@ const Trends = () => {
       });
     } finally {
       setDeleting(false);
+    }
+  };
+
+  // 删除竞品账号
+  const handleDeleteCompetitor = async () => {
+    if (!competitorToDelete) return;
+    
+    setDeletingCompetitor(true);
+    try {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.deleteCompetitor(competitorToDelete.id)), {
+        method: "DELETE",
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // 从列表中移除
+        setCompetitors(prev => prev.filter(c => c.id !== competitorToDelete.id));
+        toast({
+          title: "删除成功",
+          description: data.message || "竞品账号已删除",
+        });
+        setShowDeleteCompetitorConfirm(false);
+        setCompetitorToDelete(null);
+        // 重新加载统计数据
+        loadStats();
+      } else {
+        throw new Error(data.detail || "删除失败");
+      }
+    } catch (error: any) {
+      toast({
+        title: "删除失败",
+        description: error.message || "无法删除竞品账号",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingCompetitor(false);
+    }
+  };
+
+  // 删除关键词
+  const handleDeleteKeyword = async () => {
+    if (!keywordToDelete) return;
+    
+    setDeletingKeyword(true);
+    try {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.deleteKeyword(keywordToDelete.id)), {
+        method: "DELETE",
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // 从列表中移除
+        setKeywords(prev => prev.filter(k => k.id !== keywordToDelete.id));
+        toast({
+          title: "删除成功",
+          description: data.message || "关键词已删除",
+        });
+        setShowDeleteKeywordConfirm(false);
+        setKeywordToDelete(null);
+        // 重新加载统计数据
+        loadKeywordStats();
+      } else {
+        throw new Error(data.detail || "删除失败");
+      }
+    } catch (error: any) {
+      toast({
+        title: "删除失败",
+        description: error.message || "无法删除关键词",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingKeyword(false);
     }
   };
 
@@ -574,7 +658,7 @@ const Trends = () => {
                         {filteredKeywords.map((keyword, index) => (
                           <div
                             key={keyword.id}
-                            className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent transition-colors cursor-pointer"
+                            className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent transition-colors cursor-pointer group/item"
                             onClick={() => handleKeywordClick(keyword)}
                           >
                             <div className={`w-8 h-8 rounded flex items-center justify-center text-sm font-bold flex-shrink-0 ${
@@ -595,6 +679,18 @@ const Trends = () => {
                                 <span>帖子数: {keyword.total_posts}</span>
                               </div>
                             </div>
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setKeywordToDelete(keyword);
+                                setShowDeleteKeywordConfirm(true);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         ))}
                       </div>
@@ -1009,7 +1105,7 @@ const Trends = () => {
                       {filteredCompetitors.map((account, index) => (
                         <div
                           key={account.id}
-                          className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent transition-colors cursor-pointer"
+                          className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent transition-colors cursor-pointer group/item"
                           onClick={() => handleCompetitorClick(account)}
                         >
                           <div className={`w-8 h-8 rounded flex items-center justify-center text-sm font-bold flex-shrink-0 ${
@@ -1037,6 +1133,18 @@ const Trends = () => {
                               <span>帖子: {account.posts_count}</span>
                             </div>
                           </div>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            className="opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCompetitorToDelete(account);
+                              setShowDeleteCompetitorConfirm(true);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       ))}
                     </div>
@@ -1754,6 +1862,88 @@ const Trends = () => {
               disabled={deleting}
             >
               {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  删除中...
+                </>
+              ) : (
+                "确认删除"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 删除竞品账号确认对话框 */}
+      <Dialog open={showDeleteCompetitorConfirm} onOpenChange={setShowDeleteCompetitorConfirm}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>确认删除竞品账号</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground">
+            确定要删除竞品账号 <span className="font-semibold text-foreground">@{competitorToDelete?.username}</span> 吗？
+          </p>
+          <p className="text-sm text-destructive">
+            ⚠️ 此操作将同时删除该账号下的所有帖子数据，且不可撤销！
+          </p>
+          <div className="flex gap-3 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteCompetitorConfirm(false);
+                setCompetitorToDelete(null);
+              }}
+              disabled={deletingCompetitor}
+            >
+              取消
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCompetitor}
+              disabled={deletingCompetitor}
+            >
+              {deletingCompetitor ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  删除中...
+                </>
+              ) : (
+                "确认删除"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 删除关键词确认对话框 */}
+      <Dialog open={showDeleteKeywordConfirm} onOpenChange={setShowDeleteKeywordConfirm}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>确认删除关键词</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground">
+            确定要删除关键词 <span className="font-semibold text-foreground">#{keywordToDelete?.keyword}</span> 吗？
+          </p>
+          <p className="text-sm text-destructive">
+            ⚠️ 此操作将同时删除该关键词下的所有帖子数据，且不可撤销！
+          </p>
+          <div className="flex gap-3 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteKeywordConfirm(false);
+                setKeywordToDelete(null);
+              }}
+              disabled={deletingKeyword}
+            >
+              取消
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteKeyword}
+              disabled={deletingKeyword}
+            >
+              {deletingKeyword ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   删除中...
