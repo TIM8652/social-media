@@ -2,7 +2,7 @@
 My Projects Module
 Manages user's image analysis projects from mypostl table
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
@@ -484,7 +484,7 @@ async def get_project_detail(project_id: int, user_id: int):
         conn.close()
 
 @router.delete("/{project_id}")
-async def delete_project(project_id: int, user_id: int):
+async def delete_project(project_id: int, user_id: int = Query(..., description="User ID for verification")):
     """
     Delete a project
     
