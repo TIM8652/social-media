@@ -225,4 +225,48 @@ def delete_post(post_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"删除失败: {str(e)}")
 
+@router.delete("/competitors/{competitor_id}")
+def delete_competitor(competitor_id: int):
+    """删除竞品账号（级联删除所有关联帖子）
+    
+    Args:
+        competitor_id: 竞品账号ID
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # 先检查竞品是否存在
+        cursor.execute('SELECT id, username FROM competitor WHERE id = %s', (competitor_id,))
+        competitor = cursor.fetchone()
+        
+        if not competitor:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="竞品账号不存在")
+        
+        username = competitor['username']
+        
+        # 删除竞品账号（关联帖子会通过 ON DELETE CASCADE 自动删除）
+        cursor.execute('''
+            DELETE FROM competitor 
+            WHERE id = %s
+            RETURNING id
+        ''', (competitor_id,))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "message": f"竞品账号 @{username} 及其所有帖子已删除",
+            "competitor_id": competitor_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"删除失败: {str(e)}")
+
 
