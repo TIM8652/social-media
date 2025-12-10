@@ -123,7 +123,7 @@ const Projects = () => {
   const handleDeleteProject = async (projectId: number) => {
     try {
       const userId = localStorage.getItem("userId") || "1";
-      const response = await fetch(`http://localhost:8000/api/my-projects/${projectId}?user_id=${userId}`, {
+      const response = await fetch(`${getApiUrl(API_ENDPOINTS.myProjectDelete(projectId))}?user_id=${userId}`, {
         method: "DELETE",
       });
 
