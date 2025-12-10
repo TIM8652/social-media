@@ -34,12 +34,14 @@ export const API_ENDPOINTS = {
   competitorStats: '/api/competitors/stats',
   competitorPosts: (username: string) => `/api/competitors/${username}/posts`,
   competitorScrape: '/api/scrape',
+  deleteCompetitor: (competitorId: number) => `/api/competitors/${competitorId}`,
   
   // ========== 搜索/关键词 ==========
   searchKeywords: '/api/search/keywords',
   searchKeywordStats: '/api/search/keywords/stats',
   searchKeywordPosts: (keyword: string) => `/api/search/keywords/${encodeURIComponent(keyword)}/posts`,
   searchScrape: '/api/search/scrape',
+  deleteKeyword: (keywordId: number) => `/api/search/keywords/${keywordId}`,
   
   // ========== 帖子管理 ==========
   deletePost: (postId: string) => `/api/posts/${postId}`,
