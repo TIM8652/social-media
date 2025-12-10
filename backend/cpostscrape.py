@@ -142,62 +142,61 @@ def save_competitor_to_db(data):
     print(f"✅ 竞品数据已保存，ID: {competitor_id}")
     return competitor_id
 
-def scrape_posts(username, count, scrape_type="both"):
+def scrape_posts(username, posts_count=0, stories_count=0):
     """
     抓取帖子数据
     
     Args:
         username: 用户名
-        count: 抓取数量
-        scrape_type: 抓取类型 "posts"(图文) / "stories"(视频) / "both"(两者)
+        posts_count: 抓取图文数量（默认0，不抓取）
+        stories_count: 抓取视频数量（默认0，不抓取）
     
     Returns:
         list: 帖子数据列表
     """
-    print(f"正在抓取帖子: {username}, 数量: {count}, 类型: {scrape_type}")
+    print(f"正在抓取帖子: {username}, 图文数量: {posts_count}, 视频数量: {stories_count}")
     
     all_posts = []
     
-    # 根据类型抓取
-    if scrape_type in ["posts", "both"]:
     # 抓取图文帖子
-        print(f"📝 抓取 {count} 条图文帖子...")
-    posts_input = {
-        "directUrls": [f"https://www.instagram.com/{username}/"],
-        "resultsType": "posts",
-        "resultsLimit": count,
-        "searchType": "hashtag",
-        "searchLimit": 1,
-        "addParentData": False,
-    }
+    if posts_count > 0:
+        print(f"📝 抓取 {posts_count} 条图文帖子...")
+        posts_input = {
+            "directUrls": [f"https://www.instagram.com/{username}/"],
+            "resultsType": "posts",
+            "resultsLimit": posts_count,
+            "searchType": "hashtag",
+            "searchLimit": 1,
+            "addParentData": False,
+        }
+        
+        try:
+            run = client.actor("RB9HEZitC8hIUXAha").call(run_input=posts_input)
+            posts = list(client.dataset(run["defaultDatasetId"]).iterate_items())
+            all_posts.extend(posts)
+            print(f"✅ 获取到 {len(posts)} 条图文帖子")
+        except Exception as e:
+            print(f"❌ 抓取图文帖子失败: {e}")
     
-    try:
-        run = client.actor("RB9HEZitC8hIUXAha").call(run_input=posts_input)
-        posts = list(client.dataset(run["defaultDatasetId"]).iterate_items())
-        all_posts.extend(posts)
-        print(f"✅ 获取到 {len(posts)} 条图文帖子")
-    except Exception as e:
-        print(f"❌ 抓取图文帖子失败: {e}")
-    
-    if scrape_type in ["stories", "both"]:
     # 抓取视频帖子
-        print(f"🎥 抓取 {count} 条视频帖子...")
-    stories_input = {
-        "directUrls": [f"https://www.instagram.com/{username}/"],
-        "resultsType": "stories",
-        "resultsLimit": count,
-        "searchType": "hashtag",
-        "searchLimit": 1,
-        "addParentData": False,
-    }
-    
-    try:
-        run = client.actor("RB9HEZitC8hIUXAha").call(run_input=stories_input)
-        stories = list(client.dataset(run["defaultDatasetId"]).iterate_items())
-        all_posts.extend(stories)
-        print(f"✅ 获取到 {len(stories)} 条视频帖子")
-    except Exception as e:
-        print(f"❌ 抓取视频帖子失败: {e}")
+    if stories_count > 0:
+        print(f"🎥 抓取 {stories_count} 条视频帖子...")
+        stories_input = {
+            "directUrls": [f"https://www.instagram.com/{username}/"],
+            "resultsType": "stories",
+            "resultsLimit": stories_count,
+            "searchType": "hashtag",
+            "searchLimit": 1,
+            "addParentData": False,
+        }
+        
+        try:
+            run = client.actor("RB9HEZitC8hIUXAha").call(run_input=stories_input)
+            stories = list(client.dataset(run["defaultDatasetId"]).iterate_items())
+            all_posts.extend(stories)
+            print(f"✅ 获取到 {len(stories)} 条视频帖子")
+        except Exception as e:
+            print(f"❌ 抓取视频帖子失败: {e}")
     
     return all_posts
 
@@ -442,14 +441,14 @@ def save_posts_to_db(posts, username):
     print(f"✅ 成功保存 {saved_count} 条帖子到数据库")
     return saved_count
 
-def scrape_competitor_data(username, post_count, scrape_type="both"):
+def scrape_competitor_data(username, posts_count=0, stories_count=0):
     """
     主函数：抓取竞品数据
     
     Args:
         username: 用户名
-        post_count: 帖子数量
-        scrape_type: 抓取类型 "posts"(图文) / "stories"(视频) / "both"(两者)
+        posts_count: 图文数量（默认0，不抓取）
+        stories_count: 视频数量（默认0，不抓取）
     
     Returns:
         dict: 抓取结果
@@ -457,8 +456,8 @@ def scrape_competitor_data(username, post_count, scrape_type="both"):
     print(f"\n{'='*60}")
     print(f"开始抓取竞品数据")
     print(f"用户名: {username}")
-    print(f"帖子数量: {post_count}")
-    print(f"抓取类型: {scrape_type}")
+    print(f"图文数量: {posts_count}")
+    print(f"视频数量: {stories_count}")
     print(f"{'='*60}\n")
     
     # 检查竞品是否存在
@@ -481,7 +480,7 @@ def scrape_competitor_data(username, post_count, scrape_type="both"):
         print("竞品已存在，跳过详情抓取")
     
     # 抓取帖子
-    posts = scrape_posts(username, post_count, scrape_type)
+    posts = scrape_posts(username, posts_count, stories_count)
     if posts:
         # 保存到数据库
         saved_count = save_posts_to_db(posts, username)
@@ -496,7 +495,7 @@ def scrape_competitor_data(username, post_count, scrape_type="both"):
         return {"success": False, "message": "未抓取到帖子数据"}
 
 if __name__ == "__main__":
-    # 测试
-    result = scrape_competitor_data("camblyk", 2)
+    # 测试：抓取 2 条图文 + 1 条视频
+    result = scrape_competitor_data("camblyk", posts_count=2, stories_count=1)
     print(f"\n最终结果: {result}")
 
